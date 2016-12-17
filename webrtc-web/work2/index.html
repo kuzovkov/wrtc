@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+        html { height: 100%; }
+        body { height: 100%; margin: 0; background: #111; text-align: center; }
+        #remoteVideo { height: 70%; margin-top: 5%; background: #000; }
+        #localVideo { width: 20%; position: absolute; right: 1.1em; bottom: 1em; border: 1px solid #333; background: #000; }
+        #callButton { position: absolute; display: inline-block; left: 50%; font-size: 2em; bottom: 5%; border-radius: 1em; }
+        #hangupButton { position: absolute; display: none; left: 60%; font-size: 2em; bottom: 5%; border-radius: 1em; }
+        /*#captureButton { position: absolute; display: inline-block; left: 40%; font-size: 2em; bottom: 5%; border-radius: 1em; }*/
+    </style>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+
+<video id="localVideo" autoplay muted></video>
+<video id="remoteVideo" autoplay></video>
+<!--<button id="captureButton" onclick="capture()">☎</button>-->
+<button id="callButton" onclick="createOffer()">✆</button>
+<button id="hangupButton" onclick="hangup()">☏</button>
+
+<script type="text/javascript" src="client.js"></script>
+</html>
