@@ -1,8 +1,13 @@
+var fs = require('fs');
 var static = require('node-static');
-var http = require('http');
+var https = require('https');
 var port = 1234;
+var options = {
+    key: fs.readFileSync('cert/key.pem'),
+    cert: fs.readFileSync('cert/cert.pem')
+};
 var file = new(static.Server)();
-var app = http.createServer(function (req, res) {
+var app = https.createServer(options, function (req, res) {
     file.serve(req, res);
 
 }).listen(port, function(){console.log('Server start ' + (new Date()).toLocaleString() + ' at port ' + port);});
