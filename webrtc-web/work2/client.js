@@ -16,17 +16,26 @@ if (!Date.now) {
     };
 }
 
-
+/**
+ * инициация вызова вызывающим абонентом,
+ * отправка вызываемому абоненту приглашения к связи
+ */
 function call(){
     console.log(Date.now(), 'call');
     sendMessage({type:'intent_call'});
 }
 
-
+/**
+ * начало звонка при получении согласия вызываемого абонента
+ */
 function beginConnect(){
     getUserMedia(gotStreamCaller);
 }
 
+/**
+ * получение медиапотоков с камеры и микрофона
+ * @param callback функция обратного вызова в которую передается stream
+ */
 function getUserMedia(callback){
     console.log(Date.now(), 'getUserMedia');
     navigator.getUserMedia(
@@ -36,13 +45,18 @@ function getUserMedia(callback){
     );
 }
 
-
+/**
+ * инициация ответа вызывающему абоненту
+ */
 function answer(){
     console.log(Date.now(), 'answer');
     getUserMedia(gotStreamCalle);
 }
 
-
+/**
+ * обработчик получения медиапотока вызывающим абонентом
+ * @param stream медиапоток
+ */
 function gotStreamCaller(stream) {
     sendMessage({type:'call'});
     attachStream(document.getElementById("localVideo"), stream);
@@ -52,9 +66,13 @@ function gotStreamCaller(stream) {
     pc.addStream(stream);
     pc.onicecandidate = gotIceCandidate;
     pc.onaddstream = gotRemoteStream;
-
 }
 
+/**
+ * присоединение потока к объекту video для проигрывания
+ * @param el елемент DOM video
+ * @param stream медиапоток
+ */
 function attachStream(el, stream) {
     var myURL = window.URL || window.webkitURL;
     if (!myURL) {
@@ -64,6 +82,10 @@ function attachStream(el, stream) {
     }
 }
 
+/**
+ * обработчик получения медиапотока вызываемым абонентом (в соотв. с протоколом WebRTC)
+ * @param stream медиапоток
+ */
 function gotStreamCalle(stream) {
     attachStream(document.getElementById("localVideo"), stream);
     localStream = stream;
@@ -75,7 +97,9 @@ function gotStreamCalle(stream) {
 }
 
 
-// Step 2. createOffer
+/**
+ * создание Offer для инициации связи (в соотв. с протоколом WebRTC)
+ */
 function createOffer() {
     console.log(Date.now(), 'createOffer');
     document.getElementById("hangupButton").style.display = 'inline-block';
@@ -87,7 +111,9 @@ function createOffer() {
 }
 
 
-// Step 3. createAnswer
+/**
+ * создание Answer для инициации связи (в соотв. с протоколом WebRTC)
+ */
 function createAnswer() {
     console.log(Date.now(), 'createAnswer');
     pc.createAnswer(
@@ -97,13 +123,20 @@ function createAnswer() {
     );
 }
 
-
+/**
+ * обработчик получения локального SDP (в соотв. с протоколом WebRTC)
+ * @param description SDP
+ */
 function gotLocalDescription(description){
     console.log(Date.now(), 'gotLocalDescription:', description);
     pc.setLocalDescription(description);
     sendMessage(description);
 }
 
+/**
+ * обработчик получения ICE Candidate объектом RTCPeerConnection (в соотв. с протоколом WebRTC)
+ * @param event
+ */
 function gotIceCandidate(event){
     console.log(Date.now(), 'gotIceCandidate: ', event.candidate);
     if (event.candidate) {
@@ -116,6 +149,11 @@ function gotIceCandidate(event){
     }
 }
 
+/**
+ * обработчик получения объектом RTCPeerConnection
+ * удаленного медиапотока
+ * @param event объект события
+ */
 function gotRemoteStream(event){
     console.log(Date.now(), 'gotRemoteStream: ', event.stream);
     document.getElementById("hangupButton").style.display = 'inline-block';
@@ -129,11 +167,20 @@ function gotRemoteStream(event){
 
 var socket = io.connect('', {port: 1234});
 
+/**
+ * отправка сообщений абоненту через socket.io
+ * для обеспечения сигналлинга
+ * @param message
+ */
 function sendMessage(message){
     console.log(Date.now(), 'send_message: ', message);
     socket.emit('message', message);
 }
 
+/**
+ * обработка сообщений от абонента
+ * для обеспечения сигналлинга
+ */
 socket.on('message', function (message){
     console.log(Date.now(), 'recive_message: ', message);
     if (pc == null)console.log('pc == null');
@@ -170,10 +217,12 @@ socket.on('message', function (message){
     }else if (message.type === 'reject_call'){
         alert('Вызов отклонен');
     }
-
-
+    
 });
 
+/**
+ * завершение сеанса связи
+ */
 function hangup(){
     if (online){
         online = false;
@@ -200,6 +249,9 @@ function hangup(){
 
 }
 
+/**
+ * Принятие или отклонение звонка
+ */
 function confirmAnswer(){
     return confirm('Принять звонок?');
 };
