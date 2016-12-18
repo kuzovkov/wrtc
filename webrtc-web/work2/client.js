@@ -7,13 +7,15 @@ var pc = null; // PeerConnection
 var localStream = null;
 //var pc_config = {"iceServers": [{"url": "turn:drakmail%40delta.pm@numb.viagenie.ca:3478", "credential": "PLACE_HERE_YOUR_PASSWORD"}, {"url": "stun:stun.l.google.com:19302"}]};
 var pc_config = null;
-
+var online = false;
 
 if (!Date.now) {
     Date.now = function now() {
         return new Date().getTime();
     };
 }
+
+//createPeerConnection();
 
 // Step 1. getUserMedia
 function call(){
@@ -29,8 +31,20 @@ function getUserMedia(){
     );
 }
 
+/*
+function createPeerConnection(){
+    if (pc != null){
+        pc.close();
+        pc = null;
+    }
+    pc = new PeerConnection(pc_config);
+    pc.onicecandidate = gotIceCandidate;
+    pc.onaddstream = gotRemoteStream;
+}
+*/
 
 function answer(){
+
     console.log(Date.now(), 'answer');
     navigator.getUserMedia(
         { audio: true, video: true },
@@ -43,18 +57,18 @@ function answer(){
 function gotStream(stream) {
     //document.getElementById("callButton").style.display = 'none';
     //document.getElementById("Button").style.display = 'none';
-
+    sendMessage({type:'call'});
     //document.getElementById("localVideo").src = URL.createObjectURL(stream);
     attachStream(document.getElementById("localVideo"), stream);
 
-
+    //createPeerConnection();
     localStream = stream;
     console.log(Date.now(), 'gotStream:', stream);
     pc = new PeerConnection(pc_config);
     pc.addStream(stream);
     pc.onicecandidate = gotIceCandidate;
     pc.onaddstream = gotRemoteStream;
-    sendMessage({type:'call'});
+
     createOffer();
 }
 
@@ -70,6 +84,7 @@ function attachStream(el, stream) {
 function gotStream2(stream) {
     //document.getElementById("callButton").style.display = 'none';
     //document.getElementById("Button").style.display = 'none';
+    //createPeerConnection();
     document.getElementById("localVideo").src = URL.createObjectURL(stream);
     localStream = stream;
     pc = new PeerConnection(pc_config);
@@ -125,6 +140,7 @@ function gotRemoteStream(event){
     document.getElementById("hangupButton").style.display = 'inline-block';
     //document.getElementById("remoteVideo").src = URL.createObjectURL(event.stream);
     attachStream(document.getElementById("remoteVideo"), event.stream);
+    online = true;
 }
 
 
@@ -141,17 +157,25 @@ function sendMessage(message){
 
 socket.on('message', function (message){
     console.log(Date.now(), 'recive_message: ', message);
+    if (pc == null)console.log('pc == null');
     if (pc != null && message.type === 'offer') {
-        pc.setRemoteDescription(new SessionDescription(message));
-        createAnswer();
+        if (confirmAnswer()){
+            pc.setRemoteDescription(new SessionDescription(message));
+            createAnswer();
+        }
     }
     else if (pc != null && message.type === 'answer') {
         pc.setRemoteDescription(new SessionDescription(message));
     }
     else if (pc != null && message.type === 'candidate') {
         //var candidate = new IceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
-        var candidate = new IceCandidate(message);
-        pc.addIceCandidate(candidate);
+        try{
+            var candidate = new IceCandidate(message);
+            pc.addIceCandidate(candidate);
+        }catch (e){
+            console.log(e);
+        }
+
     }else if (message.type === 'hangup'){
         hangup();
     }else if(message.type === 'call'){
@@ -162,7 +186,9 @@ socket.on('message', function (message){
 });
 
 function hangup(){
-    if (pc != null){
+    if (online){
+        online = false;
+        //createPeerConnection();
         pc.close();
         pc = null;
         sendMessage({type:'hangup'});
@@ -181,8 +207,14 @@ function hangup(){
     }
     document.getElementById("callButton").style.display = 'inline-block';
     document.getElementById("hangupButton").style.display = 'none';
+    document.getElementById("localVideo").src = '';
+    document.getElementById("remoteVideo").src = '';
 
 }
+
+function confirmAnswer(){
+    return confirm('Принять звонок?');
+};
 
 
 
