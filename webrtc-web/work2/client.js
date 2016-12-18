@@ -3,6 +3,24 @@ var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
 var SessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
 navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
 
+////////////////////////////////////////////
+// AudioAPI
+var audioCtx;
+var audioSource = null;
+try {
+    // Fix up for prefixing
+    window.AudioContext = window.AudioContext||window.webkitAudioContext;
+    audioCtx = new AudioContext();
+}
+catch(e) {
+    console.log('Web Audio API is not supported in this browser');
+}
+
+var call_sound = null;
+loadSound('/sounds/call.mp3', function(buffer){ call_sound = buffer; });
+
+/////////////////////////////////////////////////////////////
+
 var pc = null; // PeerConnection
 var localStream = null;
 //var pc_config = {"iceServers": [{"url": "turn:drakmail%40delta.pm@numb.viagenie.ca:3478", "credential": "PLACE_HERE_YOUR_PASSWORD"}, {"url": "stun:stun.l.google.com:19302"}]};
@@ -23,6 +41,8 @@ if (!Date.now) {
 function call(){
     console.log(Date.now(), 'call');
     sendMessage({type:'intent_call'});
+    playSound(call_sound);
+    document.getElementById("hangupButton").style.display = 'inline-block';
 }
 
 /**
@@ -159,6 +179,7 @@ function gotRemoteStream(event){
     document.getElementById("hangupButton").style.display = 'inline-block';
     attachStream(document.getElementById("remoteVideo"), event.stream);
     online = true;
+    stopSound();
 }
 
 
@@ -201,36 +222,50 @@ socket.on('message', function (message){
         }
 
     }else if (message.type === 'hangup'){
-        hangup();
+        disconnect();
     }else if(message.type === 'call'){
         answer();
     }else if(message.type === 'offer_ready'){
         createOffer();
     }else if (message.type === 'intent_call'){
+        playSound(call_sound);
         if (confirmAnswer()){
             sendMessage({type:'ready_call'});
         }else{
             sendMessage({type:'reject_call'});
+            stopSound();
         }
     }else if (message.type === 'ready_call'){
         beginConnect();
     }else if (message.type === 'reject_call'){
+        document.getElementById("hangupButton").style.display = 'none';
+        stopSound();
         alert('Вызов отклонен');
     }
-    
+
 });
 
 /**
  * завершение сеанса связи
  */
 function hangup(){
+    sendMessage({type:'hangup'});
+    disconnect();
+}
+
+
+/**
+ * завершение сеанса связи
+ */
+function disconnect(){
     if (online){
         online = false;
+
+    }
+    if(pc != null){
         pc.close();
         pc = null;
-        sendMessage({type:'hangup'});
     }
-
     if (localStream != null){
 
         localStream.getVideoTracks().forEach(function (track) {
@@ -246,7 +281,7 @@ function hangup(){
     document.getElementById("hangupButton").style.display = 'none';
     document.getElementById("localVideo").src = '';
     document.getElementById("remoteVideo").src = '';
-
+    stopSound();
 }
 
 /**
@@ -256,5 +291,47 @@ function confirmAnswer(){
     return confirm('Принять звонок?');
 };
 
+
+/**
+ * загрузка звукового файла с сервера и формирование из него буфера
+ * @param url URL файла
+ * @param buffer буфер в который помещается результат
+ */
+function loadSound(url, callback) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+
+    // Decode asynchronously
+    request.onload = function() {
+        audioCtx.decodeAudioData(request.response, function(buffer) {
+                callback(buffer);
+            }, function(err){console.log(err);});
+    };
+    request.send();
+}
+
+/**
+ * проигрывание звука
+ * @param buffer
+ */
+function playSound(buffer) {
+    audioSource = audioCtx.createBufferSource();    // creates a sound audioSource
+    audioSource.buffer = buffer;                    // tell the audioSource which sound to play
+    audioSource.loop = true;
+    audioSource.connect(audioCtx.destination);      // connect the audioSource to the context's destination (the speakers)
+    audioSource.start(0);                           // play the audioSource now// note: on older systems, may have to use deprecated noteOn(time);
+}
+
+/**
+ * останов проигывания звука
+ */
+function stopSound(){
+    if (audioSource != null){
+        audioSource.stop(0);
+        audioSource = null;
+    }
+
+}
 
 

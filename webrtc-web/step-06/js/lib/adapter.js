@@ -2,8 +2,8 @@
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
@@ -94,8 +94,8 @@
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
@@ -339,8 +339,8 @@ module.exports = {
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
@@ -480,8 +480,8 @@ module.exports = function() {
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
@@ -978,8 +978,8 @@ module.exports = SDPUtils;
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
@@ -1934,8 +1934,8 @@ module.exports = {
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
@@ -2177,8 +2177,8 @@ module.exports = {
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
@@ -2294,8 +2294,8 @@ module.exports = function() {
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
 'use strict';
@@ -2330,8 +2330,8 @@ module.exports = {
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
+ *  Use of this audioSource code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the audioSource
  *  tree.
  */
  /* eslint-env node */
