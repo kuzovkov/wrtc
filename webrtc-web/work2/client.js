@@ -16,7 +16,8 @@ catch(e) {
     console.log('Web Audio API is not supported in this browser');
 }
 
-var call_sound = null;
+var call_sound = null; /*буфер для звука вызова*/
+/*загружаем звук с сервера*/
 loadSound('/sounds/call.mp3', function(buffer){ call_sound = buffer; });
 
 /////////////////////////////////////////////////////////////
@@ -26,6 +27,7 @@ var localStream = null;
 //var pc_config = {"iceServers": [{"url": "turn:drakmail%40delta.pm@numb.viagenie.ca:3478", "credential": "PLACE_HERE_YOUR_PASSWORD"}, {"url": "stun:stun.l.google.com:19302"}]};
 var pc_config = null;
 var online = false;
+var hang_up = true; /*повешена ли трубка*/
 var mediaOptions = { audio: true, video: true };
 
 if (!Date.now) {
@@ -40,6 +42,7 @@ if (!Date.now) {
  */
 function call(){
     console.log(Date.now(), 'call');
+    hang_up = false;
     sendMessage({type:'intent_call'});
     playSound(call_sound);
     document.getElementById("hangupButton").style.display = 'inline-block';
@@ -49,7 +52,7 @@ function call(){
  * начало звонка при получении согласия вызываемого абонента
  */
 function beginConnect(){
-    getUserMedia(gotStreamCaller);
+    if (!hang_up) getUserMedia(gotStreamCaller);
 }
 
 /**
@@ -258,9 +261,9 @@ function hangup(){
  * завершение сеанса связи
  */
 function disconnect(){
+    hang_up = true;
     if (online){
         online = false;
-
     }
     if(pc != null){
         pc.close();
