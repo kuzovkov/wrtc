@@ -69,7 +69,7 @@ function gotStream(stream) {
     pc.onicecandidate = gotIceCandidate;
     pc.onaddstream = gotRemoteStream;
 
-    createOffer();
+    //createOffer();
 }
 
 function attachStream(el, stream) {
@@ -91,6 +91,7 @@ function gotStream2(stream) {
     pc.addStream(stream);
     pc.onicecandidate = gotIceCandidate;
     pc.onaddstream = gotRemoteStream;
+    sendMessage({type:'offer_ready'});
 }
 
 
@@ -180,6 +181,8 @@ socket.on('message', function (message){
         hangup();
     }else if(message.type === 'call'){
         answer();
+    }else if(message.type === 'offer_ready'){
+        createOffer();
     }
 
 
